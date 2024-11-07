@@ -1,0 +1,52 @@
+use sports_club
+
+//Create Sample Data in users Collection
+db.users.insertMany([
+    { name: "Alice", join_date: new Date("2023-01-15"), sport_preferences: ["Tennis", "Swimming"] },
+    { name: "Bob", join_date: new Date("2023-02-10"), sport_preferences: ["Basketball"] },
+    { name: "Charlie", join_date: new Date("2023-02-22"), sport_preferences: ["Tennis", "Soccer"] },
+    { name: "Daisy", join_date: new Date("2023-03-18"), sport_preferences: ["Badminton"] },
+    { name: "Ethan", join_date: new Date("2023-01-25"), sport_preferences: ["Swimming", "Soccer"] },
+    { name: "Fiona", join_date: new Date("2023-03-01"), sport_preferences: ["Tennis", "Basketball"] }
+])
+
+//Create an Index on sport_preferences
+db.users.createIndex({ sport_preferences: 1 })
+
+//Create an Index on join_date and sport_preferences:
+db.users.createIndex({ join_date: 1, sport_preferences: 1 })
+
+//Return User Names in Upper Case and in Alphabetical Order:
+db.users.aggregate([
+    {
+        $project: {
+            _id: 0,
+            name: { $toUpper: "$name" }
+        }
+    },
+    { $sort: { name: 1 } }
+])
+
+//Return User Names Sorted by the Month They Joined:
+db.users.aggregate([
+    {
+        $project: {
+            _id: 0,
+            name: 1,
+            join_month: { $month: "$join_date" }
+        }
+    },
+    { $sort: { join_month: 1 } }
+])
+
+//Show How Many People Joined Each Month of the Year:
+db.users.aggregate([
+    {
+        $group: {
+            _id: { month: { $month: "$join_date" } },
+            count: { $sum: 1 }
+        }
+    },
+    { $sort: { "_id.month": 1 } }
+])
+

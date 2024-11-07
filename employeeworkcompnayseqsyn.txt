@@ -1,0 +1,143 @@
+CREATE TABLE Employees (
+    person_name VARCHAR(50),
+    street VARCHAR(100),
+    city VARCHAR(50)
+);
+
+
+CREATE TABLE Works (
+    person_name VARCHAR(50),
+    company_name VARCHAR(50),
+    salary DECIMAL(10, 2)
+);
+
+
+CREATE TABLE Companies (
+    company_name VARCHAR(50),
+    city VARCHAR(50)
+);
+
+
+CREATE TABLE Branches (
+    branch_name VARCHAR(50),
+    branch_city VARCHAR(50),
+    assets DECIMAL(15, 2)
+);
+
+
+CREATE TABLE Customers (
+    customer_name VARCHAR(50),
+    customer_street VARCHAR(100),
+    customer_city VARCHAR(50)
+);
+
+CREATE TABLE Loans (
+    loan_number INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    amount DECIMAL(15, 2)
+);
+
+CREATE TABLE Borrowers (
+    customer_name VARCHAR(50),
+    loan_number INT,
+    FOREIGN KEY (loan_number) REFERENCES Loans(loan_number)
+);
+
+CREATE TABLE Accounts (
+    account_number INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    balance DECIMAL(15, 2)
+);
+
+CREATE TABLE Depositors (
+    customer_name VARCHAR(50),
+    account_number INT,
+    FOREIGN KEY (account_number) REFERENCES Accounts(account_number)
+);
+```
+
+
+
+
+INSERT INTO Employees (person_name, street, city) VALUES ('John Doe', '123 Elm St', 'New York');
+INSERT INTO Employees (person_name, street, city) VALUES ('Jane Smith', '456 Oak St', 'Los Angeles');
+
+
+INSERT INTO Works (person_name, company_name, salary) VALUES ('John Doe', 'TechCorp', 75000);
+INSERT INTO Works (person_name, company_name, salary) VALUES ('Jane Smith', 'HealthInc', 80000);
+
+
+INSERT INTO Companies (company_name, city) VALUES ('TechCorp', 'New York');
+INSERT INTO Companies (company_name, city) VALUES ('HealthInc', 'Los Angeles');
+
+
+INSERT INTO Branches (branch_name, branch_city, assets) VALUES ('MainBranch', 'New York', 1000000);
+INSERT INTO Branches (branch_name, branch_city, assets) VALUES ('WestBranch', 'Los Angeles', 800000);
+
+INSERT INTO Customers (customer_name, customer_street, customer_city) VALUES ('Alice Brown', '789 Pine St', 'Chicago');
+INSERT INTO Customers (customer_name, customer_street, customer_city) VALUES ('Bob White', '321 Maple St', 'Houston');
+
+
+INSERT INTO Loans (loan_number, branch_name, amount) VALUES (101, 'MainBranch', 50000);
+INSERT INTO Loans (loan_number, branch_name, amount) VALUES (102, 'WestBranch', 30000);
+
+INSERT INTO Borrowers (customer_name, loan_number) VALUES ('Alice Brown', 101);
+INSERT INTO Borrowers (customer_name, loan_number) VALUES ('Bob White', 102);
+
+
+INSERT INTO Accounts (account_number, branch_name, balance) VALUES (1001, 'MainBranch', 1000);
+INSERT INTO Accounts (account_number, branch_name, balance) VALUES (1002, 'WestBranch', 1500);
+
+
+INSERT INTO Depositors (customer_name, account_number) VALUES ('Alice Brown', 1001);
+INSERT INTO Depositors (customer_name, account_number) VALUES ('Bob White', 1002);
+
+
+CREATE VIEW Customer_View AS
+SELECT customer_name, customer_street
+FROM Customers;
+
+
+SELECT * FROM Customer_View;
+
+
+CREATE INDEX loan_number_idx ON Loans(loan_number);
+
+
+CREATE SEQUENCE account_seq
+START WITH 1003
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+
+INSERT INTO Accounts (account_number, branch_name, balance)
+VALUES (account_seq.NEXTVAL, 'MainBranch', 2000);
+
+INSERT INTO Accounts (account_number, branch_name, balance)
+VALUES (account_seq.NEXTVAL, 'WestBranch', 2500);
+
+INSERT INTO Accounts (account_number, branch_name, balance)
+VALUES (account_seq.NEXTVAL, 'MainBranch', 3000);
+
+INSERT INTO Accounts (account_number, branch_name, balance)
+VALUES (account_seq.NEXTVAL, 'WestBranch', 3500);
+
+SELECT * FROM Accounts;
+
+CREATE SYNONYM dep_synonym FOR Depositors;
+CREATE SYNONYM bor_synonym FOR Borrowers;
+
+SELECT * FROM dep_synonym;
+
+SELECT * FROM bor_synonym;
+
+UPDATE dep_synonym
+SET account_number = 1003
+WHERE customer_name = 'Alice Brown';
+
+SELECT * FROM Depositors;
+
+DROP SYNONYM dep_synonym;
+
+
